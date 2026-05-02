@@ -1,0 +1,4 @@
+Hostname:localhost
+Database:alilogis_genzimage
+Username:alilogis_genzimage
+Password:682y6Txc5aPrfKQBH7Ee
