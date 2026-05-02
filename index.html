@@ -389,7 +389,7 @@
                         </div>
                         
                         <div class="mt-auto flex justify-between gap-2 pt-3 border-t border-gray-50">
-                            <button onclick="copyLink('${window.location.origin + '/' + photo.url}')" title="Copy URL" class="p-2 rounded-xl hover:bg-gray-50 transition-colors flex-1 flex justify-center">
+                            <button onclick="copyLink(window.location.href.substring(0, window.location.href.lastIndexOf('/')) + '/' + '${photo.url}')" title="Copy URL" class="p-2 rounded-xl hover:bg-gray-50 transition-colors flex-1 flex justify-center">
                                 <i class="fa-solid fa-link text-xs text-gray-400 hover:text-black"></i>
                             </button>
                             <button onclick="downloadImage('${photo.url}', 'asset-${photo.id}.jpg')" title="Download" class="p-2 rounded-xl hover:bg-gray-50 transition-colors flex-1 flex justify-center">
