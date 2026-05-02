@@ -177,10 +177,18 @@
         </div>
     </div>
 
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] hidden animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <div class="bg-black text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 border border-white/10">
+            <i class="fa-solid fa-circle-check text-green-400"></i>
+            <span id="toastMessage" class="text-sm font-semibold"></span>
+        </div>
+    </div>
+
     <script>
         let photos = [];
         let searchQuery = '';
-        let selectedFiles = [];
+        let selectedFiles = []; 
 
         document.addEventListener('DOMContentLoaded', () => {
             fetchPhotos();
@@ -348,6 +356,7 @@
 
                 await fetchPhotos();
                 closeModal();
+                showToast('Gambar berhasil diunggah!');
             } catch (err) {
                 console.error(err);
                 alert('Gagal mengunggah: ' + err.message);
@@ -385,7 +394,16 @@
         }
 
         function copyLink(url) {
-            navigator.clipboard.writeText(url).then(() => alert('Copied!'));
+            navigator.clipboard.writeText(url).then(() => showToast('Link berhasil disalin!'));
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').innerText = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
         }
 
         function formatDate(dateStr) {
