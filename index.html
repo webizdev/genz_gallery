@@ -187,6 +187,7 @@
 
     <script>
         let photos = [];
+        let pendingUploads = [];
         let searchQuery = '';
         let selectedFiles = []; 
 
@@ -341,14 +342,39 @@
                 );
             }
 
-            if (filtered.length === 0) {
+            if (filtered.length === 0 && pendingUploads.length === 0) {
                 grid.innerHTML = '';
                 emptyState.classList.remove('hidden');
                 return;
             }
 
             emptyState.classList.add('hidden');
-            grid.innerHTML = filtered.map(photo => `
+            
+            // Combine pending and existing photos
+            let html = '';
+            
+            // Render Pending Uploads First
+            pendingUploads.forEach(photo => {
+                html += `
+                    <div class="image-card group relative bg-white rounded-2xl overflow-hidden border border-zinc-100 flex flex-col h-full shadow-sm opacity-70">
+                        <div class="aspect-square overflow-hidden bg-gray-50 relative">
+                            <img src="${photo.tempUrl}" alt="Uploading..." class="w-full h-full object-cover blur-[2px]">
+                            <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center p-6 text-center">
+                                <div class="w-full bg-white/20 rounded-full h-1.5 mb-2 overflow-hidden">
+                                    <div class="bg-white h-full transition-all duration-300" style="width: ${photo.progress}%"></div>
+                                </div>
+                                <span class="text-[10px] text-white font-bold uppercase tracking-wider">${photo.progress}% Mengunggah</span>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-bold text-gray-400 text-sm leading-tight truncate">${photo.name}</h3>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Render Existing Photos
+            html += filtered.map(photo => `
                 <div class="image-card group relative bg-white rounded-2xl overflow-hidden border border-gray-100 flex flex-col h-full shadow-sm hover:shadow-xl transition-all">
                     <div class="aspect-square overflow-hidden bg-gray-50 relative cursor-zoom-in" onclick="openPreview('${photo.url}', '${photo.name}', '', '')">
                         <img src="${photo.url}" alt="${photo.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
@@ -373,11 +399,12 @@
                     </div>
                 </div>
             `).join('');
+
+            grid.innerHTML = html;
         }
 
         async function handleUpload(e) {
             e.preventDefault();
-            const submitBtn = e.target.querySelector('button[type="submit"]');
             const name = document.getElementById('photoName').value;
 
             if (selectedFiles.length === 0) {
@@ -385,34 +412,61 @@
                 return;
             }
 
-            submitBtn.disabled = true;
-            submitBtn.innerText = 'Mengunggah...';
+            // Move to background processing
+            const filesToUpload = [...selectedFiles];
+            closeModal();
 
-            try {
+            filesToUpload.forEach((file, index) => {
+                const tempId = Date.now() + index;
+                const tempUrl = URL.createObjectURL(file);
+                const pendingPhoto = {
+                    id: tempId,
+                    name: filesToUpload.length > 1 ? `${name} ${index + 1}` : name,
+                    tempUrl: tempUrl,
+                    progress: 0
+                };
+
+                pendingUploads.unshift(pendingPhoto);
+                renderGallery();
+
+                // Start Upload
+                const xhr = new XMLHttpRequest();
                 const formData = new FormData();
-                formData.append('name', name);
-                selectedFiles.forEach(file => {
-                    formData.append('files[]', file);
-                });
+                formData.append('name', pendingPhoto.name);
+                formData.append('files[]', file);
 
-                const response = await fetch('api.php?action=upload', {
-                    method: 'POST',
-                    body: formData
-                });
+                xhr.upload.onprogress = (event) => {
+                    if (event.lengthComputable) {
+                        pendingPhoto.progress = Math.round((event.loaded / event.total) * 100);
+                        renderGallery();
+                    }
+                };
 
-                const result = await response.json();
-                if (result.error) throw new Error(result.error);
+                xhr.onload = async () => {
+                    if (xhr.status === 200) {
+                        const result = JSON.parse(xhr.responseText);
+                        if (!result.error) {
+                            pendingUploads = pendingUploads.filter(p => p.id !== tempId);
+                            URL.revokeObjectURL(tempUrl);
+                            showToast('Gambar berhasil diunggah!');
+                            await fetchPhotos(); // Refresh final gallery
+                        } else {
+                            alert('Gagal: ' + result.error);
+                            pendingUploads = pendingUploads.filter(p => p.id !== tempId);
+                            renderGallery();
+                        }
+                    }
+                };
 
-                await fetchPhotos();
-                closeModal();
-                showToast('Gambar berhasil diunggah!');
-            } catch (err) {
-                console.error(err);
-                alert('Gagal mengunggah: ' + err.message);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = 'Publish to Gallery';
-            }
+                xhr.onerror = () => {
+                    alert('Network error occurred during upload.');
+                    pendingUploads = pendingUploads.filter(p => p.id !== tempId);
+                    renderGallery();
+                };
+
+                xhr.open('POST', 'api.php?action=upload');
+                xhr.send(formData);
+            });
         }
 
         function openModal() {
