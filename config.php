@@ -18,4 +18,8 @@ try {
 } catch (\PDOException $e) {
      throw new \PDOException($e->getMessage(), (int)$e->getCode());
 }
+<<<<<<< HEAD
 ?>
+=======
+?>
+>>>>>>> 51beeb98a66a7f1353a52d632dd2bd64885b37c7

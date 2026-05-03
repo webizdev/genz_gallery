@@ -94,4 +94,8 @@ switch ($action) {
         echo json_encode(['error' => 'Unknown action']);
         break;
 }
+<<<<<<< HEAD
 ?>
+=======
+?>
+>>>>>>> 51beeb98a66a7f1353a52d632dd2bd64885b37c7

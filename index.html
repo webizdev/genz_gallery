@@ -4,9 +4,69 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Genz Syar'ie Gallery | Self-Host Image Suite</title>
+<<<<<<< HEAD
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- API Backend Bridge -->
     <link rel="stylesheet" href="style.css">
+=======
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- API Backend Bridge -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --bg-primary: #ffffff;
+            --accent: #000000;
+            --gray-soft: #f9f9f9;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: #111;
+            scroll-behavior: smooth;
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .drop-zone {
+            border: 2px dashed #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .drop-zone:hover, .drop-zone.active {
+            border-color: var(--accent);
+            background: var(--gray-soft);
+        }
+
+        .image-card {
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s ease;
+        }
+
+        .image-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+        }
+
+        .custom-scroll::-webkit-scrollbar {
+            height: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #eee;
+            border-radius: 10px;
+        }
+
+        #uploadPreview {
+            max-height: 150px;
+            object-fit: contain;
+        }
+    </style>
+>>>>>>> 51beeb98a66a7f1353a52d632dd2bd64885b37c7
 </head>
 <body class="min-h-screen">
 
@@ -65,6 +125,7 @@
         <div id="photoGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             <!-- Cards injected here -->
         </div>
+<<<<<<< HEAD
 
         <!-- Load More -->
         <div id="loadMoreContainer" class="hidden flex justify-center mt-12">
@@ -73,6 +134,8 @@
                 <span>Tampilkan Photo Lainnya</span>
             </button>
         </div>
+=======
+>>>>>>> 51beeb98a66a7f1353a52d632dd2bd64885b37c7
     </main>
 
     <!-- Upload Modal -->
@@ -144,8 +207,11 @@
         let pendingUploads = [];
         let searchQuery = '';
         let selectedFiles = []; 
+<<<<<<< HEAD
         let currentPage = 1;
         const itemsPerPage = 20;
+=======
+>>>>>>> 51beeb98a66a7f1353a52d632dd2bd64885b37c7
 
         document.addEventListener('DOMContentLoaded', () => {
             fetchPhotos();
@@ -167,12 +233,15 @@
 
         function handleSearch() {
             searchQuery = document.getElementById('searchInput').value.toLowerCase();
+<<<<<<< HEAD
             currentPage = 1;
             renderGallery();
         }
 
         function loadMore() {
             currentPage++;
+=======
+>>>>>>> 51beeb98a66a7f1353a52d632dd2bd64885b37c7
             renderGallery();
         }
 
@@ -295,7 +364,10 @@
         function renderGallery() {
             const grid = document.getElementById('photoGrid');
             const emptyState = document.getElementById('emptyState');
+<<<<<<< HEAD
             const loadMoreContainer = document.getElementById('loadMoreContainer');
+=======
+>>>>>>> 51beeb98a66a7f1353a52d632dd2bd64885b37c7
             
             let filtered = [...photos];
             
@@ -308,7 +380,10 @@
             if (filtered.length === 0 && pendingUploads.length === 0) {
                 grid.innerHTML = '';
                 emptyState.classList.remove('hidden');
+<<<<<<< HEAD
                 if (loadMoreContainer) loadMoreContainer.classList.add('hidden');
+=======
+>>>>>>> 51beeb98a66a7f1353a52d632dd2bd64885b37c7
                 return;
             }
 
@@ -337,6 +412,7 @@
                 `;
             });
 
+<<<<<<< HEAD
             const paginatedPhotos = filtered.slice(0, currentPage * itemsPerPage);
 
             // Render Existing Photos
@@ -344,6 +420,13 @@
                 <div class="image-card group relative bg-white rounded-2xl overflow-hidden border border-gray-100 flex flex-col h-full shadow-sm hover:shadow-xl transition-all">
                     <div class="aspect-square overflow-hidden bg-gray-50 relative cursor-zoom-in" onclick="openPreview('${photo.url}', '${photo.name}', '', '')">
                         <img src="${photo.url}" alt="${photo.name}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+=======
+            // Render Existing Photos
+            html += filtered.map(photo => `
+                <div class="image-card group relative bg-white rounded-2xl overflow-hidden border border-gray-100 flex flex-col h-full shadow-sm hover:shadow-xl transition-all">
+                    <div class="aspect-square overflow-hidden bg-gray-50 relative cursor-zoom-in" onclick="openPreview('${photo.url}', '${photo.name}', '', '')">
+                        <img src="${photo.url}" alt="${photo.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+>>>>>>> 51beeb98a66a7f1353a52d632dd2bd64885b37c7
                         <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300"></div>
                     </div>
                     <div class="p-4 flex flex-col flex-grow">
@@ -367,6 +450,7 @@
             `).join('');
 
             grid.innerHTML = html;
+<<<<<<< HEAD
 
             if (loadMoreContainer) {
                 if (filtered.length > currentPage * itemsPerPage) {
@@ -379,6 +463,10 @@
 
 
 
+=======
+        }
+
+>>>>>>> 51beeb98a66a7f1353a52d632dd2bd64885b37c7
         async function handleUpload(e) {
             e.preventDefault();
             const name = document.getElementById('photoName').value;
@@ -443,7 +531,13 @@
                 xhr.open('POST', 'api.php?action=upload');
                 xhr.send(formData);
             });
+<<<<<<< HEAD
         }function openModal() {
+=======
+        }
+
+        function openModal() {
+>>>>>>> 51beeb98a66a7f1353a52d632dd2bd64885b37c7
             document.getElementById('uploadModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
         }
